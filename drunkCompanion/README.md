@@ -16,7 +16,7 @@
 1. start Emulator in Android Studio>AVD Manager or connect physical device
 1. `reactive-native run-android`
 
-### 2. Developing
+## 2. Developing
 
 #### A. Localization
 
