@@ -11,8 +11,9 @@ export default class AddDrink extends Component {
   static renderDrink(drink) {
     const {
       title, alcohol_level, brand, gtin,
-    } = drink;
-
+    } = drink.item;
+    console.log("RENDER DRINK");
+    console.log(drink);
     return (
       <View>
         <Text style={styles.titleText}>{title}</Text>
@@ -34,7 +35,7 @@ export default class AddDrink extends Component {
 
     return (
       <TouchableOpacity style={styles.suggestionContainer} 
-        onPress={() => this.setState({ query: title })}>
+        onPress={() => this.setState({ query: title, chosenDrink: drink})}>
         <Text style={styles.itemText}>{brand}</Text>
         <Text style={styles.itemText}>{title}</Text>
         <Text style={styles.alcohol_levelText}>alc {alcohol_level}%</Text>
@@ -76,6 +77,10 @@ export default class AddDrink extends Component {
     this.setState({drinks: dummy_data});
   }
 
+  chooseDrink = (drink) => {
+    
+  }
+
   findDrinksByTitle(query) {
     console.log(`QUER1Y:${query}`);
     if (query === '') {
@@ -98,7 +103,7 @@ export default class AddDrink extends Component {
   }
 
   render() {
-    const { query } = this.state;
+    const { query, chosenDrink } = this.state;
     const drinks = this.findDrinksByTitle(query);
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
     return (
@@ -115,11 +120,7 @@ export default class AddDrink extends Component {
           keyExtractor={AddDrink.keyExtractor}
         />
         <View style={styles.descriptionContainer}>
-          {drinks.length > 0 ? (
-            AddDrink.renderDrink(drinks[0])
-          ) : (
-            <Text style={styles.infoText}>Enter your Drink here</Text>
-          )}
+            {chosenDrink ? (AddDrink.renderDrink(chosenDrink)): null }
         </View>
       </View>
     );
@@ -153,9 +154,5 @@ const styles = StyleSheet.create({
     paddingTop: 5,
     paddingBottom: 5,
     margin: 2,
-  },
-  infoText: {
-    textAlign: 'center',
-    fontSize: 16,
-  },
+  }
 });
