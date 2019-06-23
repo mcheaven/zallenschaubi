@@ -1,88 +1,145 @@
 import Autocomplete from 'react-native-autocomplete-input';
 
-import React, {Component} from 'react';
-import {Picker, Button, View, Text, StyleSheet} from 'react-native';
+import React, { Component } from 'react';
+import {
+  Picker, Button, View, Text, StyleSheet, TouchableOpacity
+} from 'react-native';
 
 export default class AddDrink extends Component {
+  state = { drink: '' };
 
-    static renderDrink(film) {
-        const { title, alcohol_level, brand, gtin} = film;
-    
-        return (
-          <View>
-            <Text style={styles.titleText}>{title}</Text>
-            <Text style={styles.alcohol_level}>{alcohol_level}</Text>
+  static renderDrink(drink) {
+    const {
+      title, alcohol_level, brand, gtin,
+    } = drink;
+
+    return (
+      <View>
+        <Text style={styles.titleText}>{title}</Text>
+        <Text style={styles.alcohol_level}>{alcohol_level}</Text>
+      </View>
+    );
+  }
+
+  static renderDrinkSuggestion(drink) {
+    const {
+      title, alcohol_level, brand, gtin,
+    } = drink;
+    console.log("SUGGESTION");
+    console.log(drink);
+
+    return (
+      <View>
+        <Text style={styles.titleText}>{title}</Text>
+        <Text style={styles.alcohol_level}>{alcohol_level}</Text>
+      </View>
+    );
+  }
+
+  constructor(props) {
+    super(props);
+    const drinks = [];
+    this.state = {
+      drinks,
+      query: '',
+    };
+    this.handleChangeText = this.handleChangeText.bind(this);
+    //this.renderDrinkSuggestion = this.handleChangeText.bind(this);
+  }
+
+  componentDidMount() {
+    //First method to be called after components mount
+    //fetch the data from the server for the suggestion
+    /*
+    fetch(`${API}/films/`)
+      .then(res => res.json())
+      .then(json => {
+        const { results: films } = json;
+        this.setState({ films });
+        //setting the data in the films state
+      });
+    */
+    const drinks = [
+      {title: 'pilsner', alcohol_level: 0.4, brand: 'pilsner', key: 'pilsner'}
+    ];
+    this.setState({drinks});
+  }
+
+  findDrinkByTitle(query) {
+    console.log(`QUER1Y:${query}`);
+    if (query === '') {
+      return [];
+    }
+    console.log(`QUER2Y:${query}`);
+
+    const { drinks } = this.state;
+    console.log('ALL:');
+    console.log(drinks);
+    const regex = new RegExp(`${query.trim()}`, 'i');
+    const drinks_ = drinks.filter(drink => drink.title.search(regex) >= 0);
+    console.log("findDrinkByTitle");
+    console.log('FOUND:');
+    console.log(drinks_);
+    return drinks_;
+  }
+
+  handleChangeText(text) {
+    console.log(`CHANGETEXT:${text}`)
+    return this.setState({ query: text });
+  }
+
+  render() {
+    const { query } = this.state;
+    const drinks = this.findDrinkByTitle(query);
+    const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
+    console.log(drinks);
+    return (
+      <View style={styles.container}>
+            <Autocomplete
+              containerStyle={styles.autocompleteContainer}
+              autoCapitalize="none"
+              autoCorrect={false}
+              placeholder="Enter your Drink here"
+              defaultValue={query}
+              onChangeText={this.handleChangeText}
+              data={drinks.length === 1 && comp(query, drinks[0].title) ? [] : drinks}
+              renderItem={AddDrink.renderDrinkSuggestion}
+            />
+          {
+          <View style={styles.descriptionContainer}>
+            {drinks.length > 0 ? (
+              AddDrink.renderDrink(drinks[0])
+            ) : (
+              <Text style={styles.infoText}>Enter your Drink here</Text>
+            )}
           </View>
-        );
-    }
-
-
-    constructor(props) {
-        super(props);
-        this.state = {
-          drinks: [],
-          query: ''
-        };
-    }
-
-    findDrinkByTitle(query) {
-        if (query === '') {
-          return [];
-        }
-    
-        const { drinks } = this.state;
-        const regex = new RegExp(`${query.trim()}`, 'i');
-        return drinks.filter(drink => drink.title.search(regex) >= 0);
-    }
-
-    state = {drink: ''}
-    render(){
-        
-        const { query } = this.state;
-        const drinks = this.findDrink(query);
-        const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
-        return(
-            <View style={styles.container}>
-                <Text style={{fontSize: 20}}>What are you drinking?</Text>
-                <View>
-                    <View style={styles.autocompleteContainer}>
-                        <Autocomplete 
-                        autoCapitalize="none"
-                        autoCorrect={true} 
-                        placeholder="Enter your Drink here"
-                        defaultValue={query}
-                        data={comp(query, drinks[0]) ? [] : drinks}
-                        />
-                    </View>
-                    <View style={styles.descriptionContainer}>
-                            {drinks.length > 0 ? (
-                                AddDrink.renderDrink(films[0])
-                            ) : (
-                                <Text style={styles.infoText}>
-                                Enter your Drink here
-                                </Text>
-                            )}
-                    </View>
-                </View>
-            </View>
-        );
-    }
+          }
+      </View>
+    );
+  }
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'flex-start',
-      alignItems: 'baseline',
-      backgroundColor: '#4458',
-      flexDirection: 'column'
-    },
-    autocompleteContainer: {
-        flex: 1,
-        left: 0,
-        position: 'absolute',
-        right: 0,
-        top: 0,
-        zIndex: 1
-      }
+  container: {
+    backgroundColor: '#F5FCFF',
+    flex: 1,
+  },
+  autocompleteContainer: {
+    backgroundColor: '#ffffff',
+    borderWidth: 0,
+  },
+  descriptionContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  itemText: {
+    fontSize: 15,
+    paddingTop: 5,
+    paddingBottom: 5,
+    margin: 2,
+  },
+  infoText: {
+    textAlign: 'center',
+    fontSize: 16,
+  },
 });
