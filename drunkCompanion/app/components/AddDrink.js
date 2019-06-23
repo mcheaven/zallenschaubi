@@ -21,6 +21,10 @@ export default class AddDrink extends Component {
     );
   }
 
+  static keyExtractor(item, i) {
+    return String(item.id);
+  }
+
   renderDrinkSuggestion(drink) {
     const {
       title, alcohol_level, brand, gtin,
@@ -61,8 +65,8 @@ export default class AddDrink extends Component {
       });
     */
     const drinks = [
-      {title: 'pilsner', alcohol_level: 0.4, brand: 'pilsner', key: 'pilsner'},
-      {title: 'peterbier', alcohol_level: 0.4, brand: 'pilsner', key: 'peterbier'}
+      {title: 'pilsner', alcohol_level: 0.4, brand: 'pilsner', id: 1, gtin: ''},
+      {title: 'peterbier', alcohol_level: 0.4, brand: 'pilsner', id: 2, gtin: 'ABC'}
     ];
     this.setState({drinks});
   }
@@ -103,6 +107,7 @@ export default class AddDrink extends Component {
           onChangeText={this.handleChangeText}
           data={drinks.length === 1 && comp(query, drinks[0].title) ? [] : drinks}
           renderItem={this.renderDrinkSuggestion}
+          keyExtractor={AddDrink.keyExtractor}
         />
         <View style={styles.descriptionContainer}>
           {drinks.length > 0 ? (
@@ -120,6 +125,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: '#F5FCFF',
     flex: 1,
+
   },
   autocompleteContainer: {
     backgroundColor: '#ffffff',
