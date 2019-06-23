@@ -21,18 +21,19 @@ export default class AddDrink extends Component {
     );
   }
 
-  static renderDrinkSuggestion(drink) {
+  renderDrinkSuggestion(drink) {
     const {
       title, alcohol_level, brand, gtin,
-    } = drink;
+    } = drink.item;
     console.log("SUGGESTION");
     console.log(drink);
 
     return (
-      <View>
-        <Text style={styles.titleText}>{title}</Text>
-        <Text style={styles.alcohol_level}>{alcohol_level}</Text>
-      </View>
+      <TouchableOpacity onPress={() => this.setState({ query: title })}>
+        <Text style={styles.itemText}>
+          {brand} {title} ({alcohol_level})
+        </Text>
+      </TouchableOpacity>
     );
   }
 
@@ -44,7 +45,7 @@ export default class AddDrink extends Component {
       query: '',
     };
     this.handleChangeText = this.handleChangeText.bind(this);
-    //this.renderDrinkSuggestion = this.handleChangeText.bind(this);
+    this.renderDrinkSuggestion = this.renderDrinkSuggestion.bind(this);
   }
 
   componentDidMount() {
@@ -60,17 +61,17 @@ export default class AddDrink extends Component {
       });
     */
     const drinks = [
-      {title: 'pilsner', alcohol_level: 0.4, brand: 'pilsner', key: 'pilsner'}
+      {title: 'pilsner', alcohol_level: 0.4, brand: 'pilsner', key: 'pilsner'},
+      {title: 'peterbier', alcohol_level: 0.4, brand: 'pilsner', key: 'peterbier'}
     ];
     this.setState({drinks});
   }
 
-  findDrinkByTitle(query) {
+  findDrinksByTitle(query) {
     console.log(`QUER1Y:${query}`);
     if (query === '') {
       return [];
     }
-    console.log(`QUER2Y:${query}`);
 
     const { drinks } = this.state;
     console.log('ALL:');
@@ -84,36 +85,32 @@ export default class AddDrink extends Component {
   }
 
   handleChangeText(text) {
-    console.log(`CHANGETEXT:${text}`)
     return this.setState({ query: text });
   }
 
   render() {
     const { query } = this.state;
-    const drinks = this.findDrinkByTitle(query);
+    const drinks = this.findDrinksByTitle(query);
     const comp = (a, b) => a.toLowerCase().trim() === b.toLowerCase().trim();
-    console.log(drinks);
     return (
       <View style={styles.container}>
-            <Autocomplete
-              containerStyle={styles.autocompleteContainer}
-              autoCapitalize="none"
-              autoCorrect={false}
-              placeholder="Enter your Drink here"
-              defaultValue={query}
-              onChangeText={this.handleChangeText}
-              data={drinks.length === 1 && comp(query, drinks[0].title) ? [] : drinks}
-              renderItem={AddDrink.renderDrinkSuggestion}
-            />
-          {
-          <View style={styles.descriptionContainer}>
-            {drinks.length > 0 ? (
-              AddDrink.renderDrink(drinks[0])
-            ) : (
-              <Text style={styles.infoText}>Enter your Drink here</Text>
-            )}
-          </View>
-          }
+        <Autocomplete
+          containerStyle={styles.autocompleteContainer}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Enter your Drink here"
+          defaultValue={query}
+          onChangeText={this.handleChangeText}
+          data={drinks.length === 1 && comp(query, drinks[0].title) ? [] : drinks}
+          renderItem={this.renderDrinkSuggestion}
+        />
+        <View style={styles.descriptionContainer}>
+          {drinks.length > 0 ? (
+            AddDrink.renderDrink(drinks[0])
+          ) : (
+            <Text style={styles.infoText}>Enter your Drink here</Text>
+          )}
+        </View>
       </View>
     );
   }
