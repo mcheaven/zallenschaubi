@@ -2,7 +2,7 @@ import Autocomplete from 'react-native-autocomplete-input';
 
 import React, { Component } from 'react';
 import {
-  Picker, Button, View, Text, StyleSheet, TouchableOpacity
+  View, Text, StyleSheet, TouchableOpacity
 } from 'react-native';
 
 export default class AddDrink extends Component {
@@ -33,10 +33,11 @@ export default class AddDrink extends Component {
     console.log(drink);
 
     return (
-      <TouchableOpacity onPress={() => this.setState({ query: title })}>
-        <Text style={styles.itemText}>
-          {brand} {title} ({alcohol_level})
-        </Text>
+      <TouchableOpacity style={styles.suggestionContainer} 
+        onPress={() => this.setState({ query: title })}>
+        <Text style={styles.itemText}>{brand}</Text>
+        <Text style={styles.itemText}>{title}</Text>
+        <Text style={styles.alcohol_levelText}>alc {alcohol_level}%</Text>
       </TouchableOpacity>
     );
   }
@@ -64,11 +65,15 @@ export default class AddDrink extends Component {
         //setting the data in the films state
       });
     */
-    const drinks = [
+    const dummy_data = [
       {title: 'pilsner', alcohol_level: 0.4, brand: 'pilsner', id: 1, gtin: ''},
-      {title: 'peterbier', alcohol_level: 0.4, brand: 'pilsner', id: 2, gtin: 'ABC'}
+      {title: 'peterbier', alcohol_level: 0.4, brand: 'pilsner', id: 2, gtin: 'ABCD'},
+      {title: 'wasser', alcohol_level: 0.4, brand: 'bex', id: 3, gtin: 'ABCE'},
+      {title: 'radler', alcohol_level: 0.4, brand: 'bex', id: 4, gtin: 'ABCF'},
+      {title: 'pils', alcohol_level: 0.4, brand: 'bex', id: 5, gtin: 'ABCG'},
+      {title: 'export', alcohol_level: 0.4, brand: 'bex', id: 6, gtin: 'ABCH'}
     ];
-    this.setState({drinks});
+    this.setState({drinks: dummy_data});
   }
 
   findDrinksByTitle(query) {
@@ -123,9 +128,8 @@ export default class AddDrink extends Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#F5FCFF',
     flex: 1,
-
+    alignSelf: "stretch"
   },
   autocompleteContainer: {
     backgroundColor: '#ffffff',
@@ -135,8 +139,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  suggestionContainer: {
+    flexDirection: "row"
+  },
   itemText: {
     fontSize: 15,
+    paddingTop: 5,
+    paddingBottom: 5,
+    margin: 2,
+  },
+  alcohol_levelText: {
+    fontSize: 10,
     paddingTop: 5,
     paddingBottom: 5,
     margin: 2,
