@@ -6,41 +6,10 @@ import {
 } from 'react-native';
 
 export default class AddDrink extends Component {
-  state = { drink: '' };
-
-  static renderDrink(drink) {
-    const {
-      title, alcohol_level, brand, gtin,
-    } = drink.item;
-    console.log("RENDER DRINK");
-    console.log(drink);
-    return (
-      <View>
-        <Text style={styles.titleText}>{title}</Text>
-        <Text style={styles.alcohol_level}>{alcohol_level}</Text>
-      </View>
-    );
-  }
+  state = { drink: '', chosenDrink: null };
 
   static keyExtractor(item, i) {
     return String(item.id);
-  }
-
-  renderDrinkSuggestion(drink) {
-    const {
-      title, alcohol_level, brand, gtin,
-    } = drink.item;
-    console.log("SUGGESTION");
-    console.log(drink);
-
-    return (
-      <TouchableOpacity style={styles.suggestionContainer} 
-        onPress={() => this.setState({ query: title, chosenDrink: drink})}>
-        <Text style={styles.itemText}>{brand}</Text>
-        <Text style={styles.itemText}>{title}</Text>
-        <Text style={styles.alcohol_levelText}>alc {alcohol_level}%</Text>
-      </TouchableOpacity>
-    );
   }
 
   constructor(props) {
@@ -51,7 +20,7 @@ export default class AddDrink extends Component {
       query: '',
     };
     this.handleChangeText = this.handleChangeText.bind(this);
-    this.renderDrinkSuggestion = this.renderDrinkSuggestion.bind(this);
+    this.renderDrink = this.renderDrink.bind(this);
   }
 
   componentDidMount() {
@@ -77,10 +46,6 @@ export default class AddDrink extends Component {
     this.setState({drinks: dummy_data});
   }
 
-  chooseDrink = (drink) => {
-    
-  }
-
   findDrinksByTitle(query) {
     console.log(`QUER1Y:${query}`);
     if (query === '') {
@@ -102,6 +67,24 @@ export default class AddDrink extends Component {
     return this.setState({ query: text });
   }
 
+  
+  renderDrink(drink) {
+    const {
+      title, alcohol_level, brand, gtin,
+    } = drink.item;
+    console.log("SUGGESTION");
+    console.log(drink);
+
+    return (
+      <TouchableOpacity style={styles.suggestionContainer} 
+        onPress={() => this.setState({ query: title, chosenDrink: drink})}>
+        <Text style={styles.itemText}>{brand}</Text>
+        <Text style={styles.itemText}>{title}</Text>
+        <Text style={styles.alcohol_levelText}>alc {alcohol_level}%</Text>
+      </TouchableOpacity>
+    );
+  }
+
   render() {
     const { query, chosenDrink } = this.state;
     const drinks = this.findDrinksByTitle(query);
@@ -116,12 +99,9 @@ export default class AddDrink extends Component {
           defaultValue={query}
           onChangeText={this.handleChangeText}
           data={drinks.length === 1 && comp(query, drinks[0].title) ? [] : drinks}
-          renderItem={this.renderDrinkSuggestion}
+          renderItem={this.renderDrink}
           keyExtractor={AddDrink.keyExtractor}
         />
-        <View style={styles.descriptionContainer}>
-            {chosenDrink ? (AddDrink.renderDrink(chosenDrink)): null }
-        </View>
       </View>
     );
   }
@@ -135,10 +115,6 @@ const styles = StyleSheet.create({
   autocompleteContainer: {
     backgroundColor: '#ffffff',
     borderWidth: 0,
-  },
-  descriptionContainer: {
-    flex: 1,
-    justifyContent: 'center',
   },
   suggestionContainer: {
     flexDirection: "row"
