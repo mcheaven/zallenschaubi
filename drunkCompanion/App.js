@@ -20,14 +20,27 @@ const instructions = Platform.select({
 
 type Props = {};
 export default class App extends Component<Props> {
+
+  state = {
+    consumedDrinks: []
+  }
+
+  handleAddDrink = (drink) => {
+    const {consumedDrinks} = this.state;
+    this.setState({
+      consumedDrinks: [drink, ...consumedDrinks]
+    })
+  }
+
   render() {
+    const {consumedDrinks} = this.state;
+    console.log(consumedDrinks)
+    // TODO: render consumedDrinks with pictures and stuff
+    const consumedDrinksShowcase = consumedDrinks.map(drink => (<Text key={drink.id}>{drink.item.title}</Text>))
     return (
       <View style={styles.container}>
-        <AddDrink />
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-        <Text style={styles.tobi}>Zacha war Vier!</Text>
+        <AddDrink onPressItem={this.handleAddDrink} />
+        {consumedDrinksShowcase}
       </View>
     );
   }
