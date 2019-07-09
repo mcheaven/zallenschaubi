@@ -47,19 +47,13 @@ export default class AddDrink extends Component {
   }
 
   findDrinksByTitle(query) {
-    console.log(`QUER1Y:${query}`);
     if (query === '') {
       return [];
     }
 
     const { drinks } = this.state;
-    console.log('ALL:');
-    console.log(drinks);
     const regex = new RegExp(`${query.trim()}`, 'i');
     const drinks_ = drinks.filter(drink => drink.title.search(regex) >= 0);
-    console.log("findDrinkByTitle");
-    console.log('FOUND:');
-    console.log(drinks_);
     return drinks_;
   }
 
@@ -67,17 +61,20 @@ export default class AddDrink extends Component {
     return this.setState({ query: text });
   }
 
-  
+  onPressItem = (drink) => {
+    const {onPressItem} = this.props;
+    onPressItem(drink);
+    this.setState({chosenDrink: drink, query: ''})
+  }
+
   renderDrink(drink) {
     const {
       title, alcohol_level, brand, gtin,
     } = drink.item;
-    console.log("SUGGESTION");
-    console.log(drink);
 
     return (
       <TouchableOpacity style={styles.suggestionContainer} 
-        onPress={() => this.setState({ query: title, chosenDrink: drink})}>
+        onPress={() => this.onPressItem(drink)}>
         <Text style={styles.itemText}>{brand}</Text>
         <Text style={styles.itemText}>{title}</Text>
         <Text style={styles.alcohol_levelText}>alc {alcohol_level}%</Text>
